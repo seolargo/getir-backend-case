@@ -1,7 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 app.use(express.json());
+app.use(cors())
 
 const MongoClient = require('mongodb').MongoClient;
 const dbURI = 'mongodb+srv://challengeUser:WUMglwNBaydH8Yvu@challenge-xzwqd.mongodb.net/getir-case-study?retryWrites=true';
@@ -74,9 +76,9 @@ app.post('/filterRecords', function(req, res) {
             });
     } catch (error) {
         if (error.error === 'db-error') {
-            res.status(500).send('Some problems occurred in database');
+            res.status(500).send({error: 'Some problems occurred in database'});
         } else {
-            res.status(500).send('Internal error')
+            res.status(500).send({error: 'Internal error'})
         }
     }
 });
