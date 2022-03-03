@@ -1,9 +1,9 @@
 const express = require('express');
-const cors = require('cors');
+//const cors = require('cors');
 const app = express();
 
 app.use(express.json());
-app.use(cors())
+//app.use(cors())
 
 const MongoClient = require('mongodb').MongoClient;
 const dbURI = 'mongodb+srv://challengeUser:WUMglwNBaydH8Yvu@challenge-xzwqd.mongodb.net/getir-case-study?retryWrites=true';
