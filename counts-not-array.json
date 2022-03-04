@@ -1,0 +1,13 @@
+[
+    {
+        "_id": {
+            "$oid": "5ee21587e07f053f990ceb33"
+        },
+        "key": "cqgTPAdM",
+        "value": "JaugKbZRIJSG",
+        "createdAt": {
+            "$date": "2015-10-14T08:43:13.661Z"
+        },
+        "counts": null
+    }
+]

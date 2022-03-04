@@ -2,8 +2,8 @@ const app = require('./app');
 const supertest = require('supertest');
 const request = supertest(app);
 
-const missingCounts = require('./getir-backend-omer/mocks/missing-counts.json');
-const countsNotArray = require('./getir-backend-omer/mocks/counts-not-array.json');
+const missingCounts = require('./missing-counts.json');
+const countsNotArray = require('./counts-not-array.json');
 
 jest.setTimeout(60000);
 
