@@ -1,90 +1,67 @@
-const express = require('express');
-//const cors = require('cors');
+const PORT = process.env.PORT || 3000;
+const express = require("express");
 const app = express();
-
 app.use(express.json());
-//app.use(cors())
-
-const MongoClient = require('mongodb').MongoClient;
-const dbURI = 'mongodb+srv://challengeUser:WUMglwNBaydH8Yvu@challenge-xzwqd.mongodb.net/getir-case-study?retryWrites=true';
-
-app.get('/', function(req, res) {
-    res.status(200).send('Hello world');
-})
-
-app.post('/filterRecords', function(req, res) {
-    const startDate = req.body.startDate || '2014-01-01T00:00:00.921Z';
-    const endDate = req.body.endDate || '2016-12-31T00:00:00.921Z';
-    const minCount = req.body.minCount || 0;
-    const maxCount = req.body.maxCount || 10000;
-
-    try {
-        MongoClient.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-            .then(async (result) => {
-                const records = [];
-                await result.db('getir-case-study').collection('records').find({})
-                    .forEach(val => {
-                        const calculateTotalCount = () => {
-                            const countsArray = Object.values(val['counts']);
-                            if (!countsArray || !Array.isArray(countsArray)) {
-                                throw new Error('db-error');
-                            }
-
-                            let totalCount = 0;
-                            countsArray.forEach(value => { totalCount = totalCount + value; });
-
-                            return totalCount;
-                        }
-                        const totalCount = calculateTotalCount();
-
-                        const createdAt = val['createdAt'];
-                        if (!createdAt) {
-                            throw new Error('db-error');
-                        }
-                        const recordDate = new Date(createdAt).toISOString().split('T')[0];
-                        const recordDateInTime = new Date(recordDate).getTime();
-
-                        const startDateInTime = new Date(startDate).getTime();
-                        const endDateInTime = new Date(endDate).getTime();
-
-                        const countRequirementSatisfied = totalCount >= minCount && totalCount <= maxCount;
-                        const dateRequirementSatisfied = recordDateInTime > startDateInTime && recordDateInTime < endDateInTime;
-                        if (countRequirementSatisfied && dateRequirementSatisfied) {
-                            records.push({ 
-                                'key': val.key,
-                                'createdAt': val.createdAt,
-                                'totalCount': totalCount
-                            });
-                        }
-                    });
-
-                const areRecordsFound = records.length > 0;
-                if (areRecordsFound) {
-                    res.status(200).send({
-                        'code': 0,
-                        'msg': 'Success',
-                        'records': records
-                    });
-                } 
-                else {
-                    res.status(200).send({
-                        'code': 1,
-                        'msg': 'There are no records found for your given parameters',
-                        'records': []
-                    });
-                }
-            });
-    } catch (error) {
-        if (error.error === 'db-error') {
-            res.status(500).send({error: 'Some problems occurred in database'});
-        } else {
-            res.status(500).send({error: 'Internal error'})
-        }
-    }
+const courses = [
+  { id: 1, name: "Algorithms" },
+  { id: 2, name: "Software Engineering" },
+  { id: 3, name: "Human Computer Interaction" }
+];
+app.get("/", function(req, res) {
+  //when we get an http get request to the root/homepage
+  res.send("Hello World");
 });
-
-app.listen(process.env.PORT || 3000, function() {
-    //console.log('3000 works!')
-})
-
-module.exports = app;
+//when we route to /courses
+app.get("/courses", function(req, res) {
+  res.send(courses); //respond with the array of courses
+});
+//To get a specific course, we need to define a parameter id
+app.get("/courses/:id", function(req, res) {
+  const course = courses.find(c => c.id === parseInt(req.params.id));
+  //if the course does not exist return status 404 (not found)
+  if (!course)
+      return res
+          .status(404)
+          .send("The course with the given id was not found");
+  //return the object
+  res.send(course);
+});
+//using the http post request we can create a new course
+app.post("/courses", function(req, res) {
+  //create a course object
+  const course = {
+      id: courses.length + 1,
+      name: req.body.name
+  };
+  //add the course to the array
+  courses.push(course);
+  //return the course
+  res.send(course);
+});
+app.put("/courses/:id", function(req, res) {
+  //get the course
+  const course = courses.find(c => c.id === parseInt(req.params.id));
+  if (!course)
+      return res
+          .status(404)
+          .send("The course with the given id was not found");
+  //update the course
+  course.name = req.body.name;
+  //return the updated object
+  res.send(course);
+});
+app.put("/courses/:id", function(req, res) {
+  //get the course
+  const course = courses.find(c => c.id === parseInt(req.params.id));
+  if (!course)
+      return res
+          .status(404)
+          .send("The course with the given id was not found");
+  //update the course
+  course.name = req.body.name;
+  //returns the updated object
+  res.send(course);
+});
+app.listen(PORT, function() {
+  console.log(`Listening on Port ${PORT}`);
+});
